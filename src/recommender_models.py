@@ -64,13 +64,13 @@ def advanceMetrics(predictions):
     for uid, iid, r_ui, est, details in predictions:
         groupedpredictions[uid].append((est, r_ui))
 
-    precision = dict()
+    precisionDict = dict()
     recall = dict()
     
     for uid, uratings in groupedpredictions.items():
        TotalRelevant = 0
-       Recommended = 0
-       RelevantRecommended = 0
+       RecommendedK = 0
+       RelevantRecommendedK = 0
        #Sort in descending order
        uratings.sort(key=lambda x: x[0], reverse=True)
 
@@ -82,35 +82,35 @@ def advanceMetrics(predictions):
        for est, r_ui in uratings[:10]:
         #FalsePositive
             if (est >= 3):
-                Recommended+=1
+                RecommendedK+=1
         #True Positives
             if (est >= 3) and (r_ui >= 3):
-                RelevantRecommended+=1
+                RelevantRecommendedK+=1
        
-       if Recommended != 0:
-            precision[uid] = RelevantRecommended / Recommended
+       if RecommendedK != 0:
+            precisionDict[uid] = RelevantRecommendedK / RecommendedK
        else:
-            precision[uid] = 0
+            precisionDict[uid] = 0
        if TotalRelevant != 0:
-           recall[uid] = RelevantRecommended / TotalRelevant
+           recall[uid] = RelevantRecommendedK / TotalRelevant
        else:
            recall[uid] = 0
     PrecisionSum = 0
     RecallSum = 0
     conversionR = 0
-    for precision in precision.values():
+    for precision in precisionDict.values():
        PrecisionSum+=precision
     for recall in recall.values():
         RecallSum+=recall
-    totalPrecision = PrecisionSum/len(precision)
+    totalPrecision = PrecisionSum/len(precisionDict)
     totalRecall = RecallSum/len(recall)
     print("Precision:",totalPrecision)
     print("Recall:",totalRecall)
     print("F-Measure:",(2*totalRecall*totalPrecision)/(totalPrecision+totalRecall))
-    for precision in precision.values():
+    for precision in precisionDict.values():
         if precision>0:
             conversionR+=1
-    print("Conversion Rate:",conversionR/len(precision.values()))
+    print("Conversion Rate:",conversionR/len(precisionDict.values()))
 
 if __name__ == "__main__":
     main()
